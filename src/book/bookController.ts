@@ -2,9 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import cloudinary from "../../config/cloudinary";
 import path from "path";
 import createHttpError from "http-errors";
-import { bookModal } from "./bookModal";
-import fs from "node:fs";
-import { AuthInterface } from "../middlewares/authenticate";
+import { bookModel } from "./bookModel";
+import fs, { unlink } from "node:fs";
+import { AuthInterface } from "../middlewares/Authenticate";
+import { error } from "console";
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
   const { title, genre } = req.body;
@@ -43,7 +44,7 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
     let newBook;
     let _req = req as AuthInterface;
     try {
-      newBook = await bookModal.create({
+      newBook = await bookModel.create({
         title,
         genre,
         author: _req.userId,
@@ -64,4 +65,91 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
   res.json({});
 };
 
-export { createBook };
+// update book
+
+const updateBook = async (req: Request, res: Response, next: NextFunction) => {
+  const { title, genre } = req.body;
+  const { bookId } = req.params;
+
+  if (!bookId) {
+    return next(createHttpError(400, "Book Id is Required!"));
+  }
+
+  // get the book from the db
+
+  const book = await bookModel.findOne({ _id: bookId });
+
+  if (!book) {
+    return next(createHttpError(404, "Book does not exist"));
+  }
+
+  // check fro the valid author
+  let _req = req as AuthInterface;
+  if (book.author.toString() !== _req.userId) {
+    return next(
+      createHttpError(403, "No access or permission to update the book ")
+    );
+  }
+
+  const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+  let imageUpload;
+  if (files.coverImage) {
+    const coverFileName = files?.coverImage[0]?.filename;
+    const coverMimType = files?.coverImage[0]?.mimetype.split("/").at(-1);
+    const filePath = path.resolve(
+      __dirname,
+      "../../public/data/uploads",
+      coverFileName
+    );
+
+    const FileName = files.file[0].filename;
+
+    let data = await cloudinary.uploader.upload(filePath, {
+      filename_override: coverFileName,
+      folder: "cover-image",
+      format: coverMimType,
+    });
+    imageUpload = data.secure_url;
+    await fs.promises.unlink(filePath);
+  }
+
+  let pdfFileUpload;
+  if (files.file) {
+    const FileName = files.file[0].filename;
+    const coverMimType = files?.coverImage[0]?.mimetype.split("/").at(-1);
+    const pdfFilePath = path.resolve(
+      __dirname,
+      "../../public/data/uploads",
+      FileName
+    );
+
+    let data = await cloudinary.uploader.upload(pdfFilePath, {
+      filename_override: FileName,
+      folder: "cover-image",
+      format: coverMimType,
+    });
+    pdfFileUpload = data.secure_url;
+    await fs.promises.unlink(pdfFilePath);
+  }
+
+  console.log("bookIdbookId", bookId);
+  try {
+    const updatedBook = await bookModel.findByIdAndUpdate(
+      { _id: bookId },
+      {
+        title,
+        genre,
+        coverImage: imageUpload ? imageUpload : book.coverImage,
+        file: pdfFileUpload ? pdfFileUpload : book.file,
+      },
+      { new: true }
+    );
+  } catch (error) {
+    console.log("error update book", error);
+  }
+
+  res.status(201).json({ message: "Book updated", data: updateBook });
+};
+
+export { createBook, updateBook };
