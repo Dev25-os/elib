@@ -152,4 +152,26 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
   res.status(201).json({ message: "Book updated", data: updateBook });
 };
 
-export { createBook, updateBook };
+const getBooks = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = await bookModel.find();
+
+    res.status(200).json({ data });
+  } catch (error) {
+    return next(createHttpError(500, "Failed to get books!"));
+  }
+};
+
+const getBook = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { bookId } = req.params;
+    const data = await bookModel.find({ _id: bookId });
+    if (!data) {
+      return next(createHttpError(404, "Book not found"));
+    }
+    res.status(200).json({ data });
+  } catch (error) {
+    return next(createHttpError(500, "Failed to get book!"));
+  }
+};
+export { createBook, updateBook, getBooks, getBook };
