@@ -1,4 +1,3 @@
-import { userModal } from "./../users/userModel";
 import mongoose, { Schema } from "mongoose";
 import { BookType } from "./bookType";
 import { userModal } from "../users/userModel";
