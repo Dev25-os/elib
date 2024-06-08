@@ -12,7 +12,8 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
 
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
-  const coverMimType = files?.coverImage[0]?.mimetype.split("/").at(-1);
+  console.log("ggg15", req.files);
+  const coverMimType = files?.coverImage[0]?.mimetype?.split("/").at(-1);
   const coverFileName = files?.coverImage[0]?.filename;
   const filePath = path.resolve(
     __dirname,
@@ -20,7 +21,7 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
     coverFileName
   );
 
-  const FileName = files.file[0].filename;
+  const FileName = files?.file[0]?.filename;
   const pdfFilePath = path.resolve(
     __dirname,
     "../../public/data/uploads",
@@ -59,14 +60,12 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
     await fs.promises.unlink(filePath);
     await fs.promises.unlink(pdfFilePath);
   } catch (error) {
-    console.log("Error while uploading files", error);
     return next(createHttpError(500, "Error while uploading files"));
   }
   res.json({});
 };
 
 // update book
-
 const updateBook = async (req: Request, res: Response, next: NextFunction) => {
   const { title, genre } = req.body;
   const { bookId } = req.params;
@@ -117,7 +116,7 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
   let pdfFileUpload;
   if (files.file) {
     const FileName = files.file[0].filename;
-    const coverMimType = files?.coverImage[0]?.mimetype.split("/").at(-1);
+    // const coverMimType = files?.coverImage[0]?.mimetype.split("/").at(-1);
     const pdfFilePath = path.resolve(
       __dirname,
       "../../public/data/uploads",
@@ -125,9 +124,10 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
     );
 
     let data = await cloudinary.uploader.upload(pdfFilePath, {
+      resource_type: "raw",
       filename_override: FileName,
-      folder: "cover-image",
-      format: coverMimType,
+      folder: "file",
+      format: "pdf",
     });
     pdfFileUpload = data.secure_url;
     await fs.promises.unlink(pdfFilePath);
@@ -174,4 +174,44 @@ const getBook = async (req: Request, res: Response, next: NextFunction) => {
     return next(createHttpError(500, "Failed to get book!"));
   }
 };
-export { createBook, updateBook, getBooks, getBook };
+const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { bookId } = req.params;
+    if (!bookId) {
+      return next(createHttpError(404, "bookId is required"));
+    }
+    const data = await bookModel.findOne({ _id: bookId });
+    if (!data) {
+      return next(createHttpError(404, "Book not found"));
+    }
+    let _req = req as AuthInterface;
+    if (data.author.toString() !== _req.userId) {
+      return next(
+        createHttpError(403, "No access or permission to update the book ")
+      );
+    }
+
+    const temp = data?.coverImage?.split("/").at(-2);
+    const coverPublicId =
+      temp + "/" + data?.coverImage?.split("/").at(-1)?.split(".").at(-2);
+
+    const temp1 = data?.file?.split("/");
+    const pdfPublicId = temp1.at(-2) + "/" + temp1.at(-1);
+
+    await cloudinary.uploader.destroy(coverPublicId);
+    await cloudinary.uploader.destroy(pdfPublicId, {
+      resource_type: "raw",
+    });
+    try {
+      const deletedBook = await bookModel.deleteOne({ _id: bookId });
+      res.status(200).json({ deletedBook });
+    } catch (error) {
+      console.log(error);
+    }
+  } catch (error) {
+    console.log("error", error);
+
+    return next(createHttpError(500, "Failed to get book!"));
+  }
+};
+export { createBook, updateBook, getBooks, getBook, deleteBook };
