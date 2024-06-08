@@ -1,11 +1,16 @@
 import express from "express";
+import cors from "cors";
 import GlobalErrorHandler from "./middlewares/GlobalErrorHandler";
 import createHttpError from "http-errors";
 import userRouter from "./users/userRoutes";
 import bookRouter from "./book/bookRoute";
 
 const app = express();
-
+app.use(
+  cors({
+    origin: "http//localhost:3000",
+  })
+);
 app.use(express.json());
 
 app.get("/", (req, res) => {
