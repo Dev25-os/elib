@@ -6,7 +6,7 @@ import book from "../../../public/book.png";
 const Banner = () => {
   return (
     <div>
-      <div className="w-full rounded-md relative">
+      <div className="w-full rounded-md relative ">
         <Image
           src={Paperbg}
           width={0}
@@ -15,7 +15,7 @@ const Banner = () => {
           alt="banner"
         />
 
-        <div className=" absolute inset-0 h-full w-full bg-gray-900 bg-opacity-30">
+        <div className=" absolute inset-0 h-full w-full bg-gray-900 bg-opacity-30 rounded-md">
           <Image
             src={book}
             alt="logo"
