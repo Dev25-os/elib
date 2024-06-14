@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 
-export default function Register() {
+export default function RegisterPage() {
   return (
     <div className="w-full h-screen flex items-center justify-center">
       <Card className="w-full max-w-sm">

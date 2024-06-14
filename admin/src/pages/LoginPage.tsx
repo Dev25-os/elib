@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 
-export default function Login() {
+export default function LoginPage() {
   return (
     <div className="flex h-screen w-full items-center justify-center">
       <Card className="w-full max-w-sm">
