@@ -9,6 +9,7 @@ const bookSchema = new Schema<BookType>(
       type: String,
       required: true,
     },
+
     author: {
       type: mongoose.Schema.ObjectId,
       required: true,

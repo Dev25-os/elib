@@ -12,7 +12,6 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
 
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
-  console.log("ggg15", req.files);
   const coverMimType = files?.coverImage[0]?.mimetype?.split("/").at(-1);
   const coverFileName = files?.coverImage[0]?.filename;
   const filePath = path.resolve(
@@ -154,7 +153,7 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
 
 const getBooks = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const data = await bookModel.find();
+    const data = await bookModel.find().populate("author", "name email");
 
     res.status(200).json({ data });
   } catch (error) {
@@ -165,7 +164,9 @@ const getBooks = async (req: Request, res: Response, next: NextFunction) => {
 const getBook = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { bookId } = req.params;
-    const data = await bookModel.find({ _id: bookId });
+    const data = await bookModel
+      .find({ _id: bookId })
+      .populate("author", "name email");
     if (!data) {
       return next(createHttpError(404, "Book not found"));
     }
