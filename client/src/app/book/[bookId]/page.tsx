@@ -18,8 +18,8 @@ const SingleBookDetails = async ({
       throw new Error("Failed to get data");
     }
 
-    book = await response.json();
-    book = book?.data[0];
+    let data = await response.json();
+    book = data?.data[0];
   } catch (error) {
     console.log("Error Fetching book by id", error);
   }
