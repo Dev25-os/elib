@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   return (
@@ -35,8 +36,14 @@ export default function Login() {
             <Input id="password" type="password" required />
           </div>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex flex-col">
           <Button className="w-full">Sign in</Button>
+          <div className="mt-4 text-center text-sm">
+            Don't have an account?{" "}
+            <Link to={"/register"} className="underline">
+              Sign up
+            </Link>
+          </div>
         </CardFooter>
       </Card>
     </div>
