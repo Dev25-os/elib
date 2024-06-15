@@ -9,7 +9,7 @@ const _config = {
   cloudniaryName: process.env.CLOUD_NAME,
   cloudniaryApiKey: process.env.API_KEY,
   cloudniaryApiSecreat: process.env.API_SECREAT,
-
+  frontEndUrl: process.env.FRONTEND_URL,
 };
 
 export const config = Object.freeze(_config);

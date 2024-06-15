@@ -4,11 +4,12 @@ import GlobalErrorHandler from "./middlewares/GlobalErrorHandler";
 import createHttpError from "http-errors";
 import userRouter from "./users/userRoutes";
 import bookRouter from "./book/bookRoute";
+import { config } from "../config/config";
 
 const app = express();
 app.use(
   cors({
-    origin: "http//localhost:3000",
+    origin: config.frontEndUrl,
   })
 );
 app.use(express.json());
