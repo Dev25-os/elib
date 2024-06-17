@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,9 +22,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { getBooks } from "@/http/api";
 import { useQuery } from "@tanstack/react-query";
-import { MoreHorizontal } from "lucide-react";
+import { CirclePlus, MoreHorizontal } from "lucide-react";
+import { Link } from "react-router-dom";
 
 type BookType = {
   _id: string;
@@ -52,6 +60,28 @@ const BooksPage = () => {
 
   return (
     <div>
+      <div className="flex items-center justify-between mb-2">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink>
+                <Link to="/home">Home</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
+        <Button size={"sm"} className="flex items-center gap-2">
+          <CirclePlus size={17} />
+          Add Book
+        </Button>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle>Books</CardTitle>
