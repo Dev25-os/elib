@@ -75,11 +75,12 @@ const BooksPage = () => {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-
-        <Button size={"sm"} className="flex items-center gap-2">
-          <CirclePlus size={17} />
-          Add Book
-        </Button>
+        <Link to={"/books/createBook"}>
+          <Button size={"sm"} className="flex items-center gap-2">
+            <CirclePlus size={17} />
+            Add Book
+          </Button>
+        </Link>
       </div>
 
       <Card>
