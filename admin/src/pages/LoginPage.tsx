@@ -27,7 +27,6 @@ export default function LoginPage() {
   const loginMutation = useMutation({
     mutationFn: login,
     onSuccess: (response) => {
-      console.log("api call success");
       setToken(response?.data?.accessToken);
       navigate("/home");
     },

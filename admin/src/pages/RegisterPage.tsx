@@ -27,7 +27,6 @@ export default function RegisterPage() {
   const registerMutation = useMutation({
     mutationFn: register,
     onSuccess: (response) => {
-      console.log("api call success");
       setToken(response?.data?.accessToken);
       navigate("/home");
     },

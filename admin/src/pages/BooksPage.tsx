@@ -48,15 +48,13 @@ type BookType = {
 };
 
 const BooksPage = () => {
-  const { data, isError, isPending } = useQuery({
+  const { data } = useQuery({
     queryKey: ["books"],
     queryFn: getBooks,
     staleTime: 10000,
   });
 
-  console.log("data", data);
-  console.log("isError", isError);
-  console.log("isPending", isPending);
+
 
   return (
     <div>

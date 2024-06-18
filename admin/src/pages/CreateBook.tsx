@@ -65,7 +65,6 @@ const CreateBook = () => {
     mutationFn: createBook,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["books"] });
-      console.log("Book created successfully");
       navigate("/books");
     },
   });
